@@ -18,7 +18,7 @@ local Checkbox = imgui.ImBool(true)
 function main()
     if not isSampLoaded() or not isSampfuncsLoaded() then return end
     while not isSampAvailable() do wait(0) end
-    sampRegisterChatCommand("vr", vrb) -- Если есть желание использовать VrB на постоянной основе "vrb" замените на "vr"
+    sampRegisterChatCommand("vrb", vrb) -- Если есть желание использовать VrB на постоянной основе "vrb" замените на "vr"
     sampRegisterChatCommand("zxc", zxc)
     imgui.Process = true
     while true do 
@@ -69,4 +69,4 @@ function theme()
     colors[clr.CloseButton] = ImVec4(0.11, 0.38, 0.29, 0.60)
 	colors[clr.CloseButtonHovered] = ImVec4(0.11, 0.38, 0.29, 1.00)
 	colors[clr.CloseButtonActive] = ImVec4(0.11, 0.38, 0.29, 1.00)
-end
+end 
