@@ -3,7 +3,6 @@ script_version("0.1")
 --------------------------------------------------------------------------------------------------------------
 require "lib.moonloader"
 
-sampAddChatMessage("{00ffaa}[VrB] {ffffff}Скрипт успешно загружен! Используйте /zxc для открытия меню взаимодействия", 0xFFFFFF)
 
 local imgui = require 'imgui'
 local encoding = require 'encoding'
@@ -18,6 +17,9 @@ local Checkbox = imgui.ImBool(true)
 function main()
     if not isSampLoaded() or not isSampfuncsLoaded() then return end
     while not isSampAvailable() do wait(0) end
+    
+    sampAddChatMessage("{00ffaa}[VrB] {ffffff}Скрипт успешно загружен! Используйте /zxc для открытия меню взаимодействия", 0xFFFFFF)
+
     sampRegisterChatCommand("vrb", vrb) -- Если есть желание использовать VrB на постоянной основе "vrb" замените на "vr"
     sampRegisterChatCommand("zxc", zxc)
     imgui.Process = true
