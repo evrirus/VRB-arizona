@@ -12,7 +12,8 @@ u8 = encoding.UTF8
 local sw, sh = getScreenResolution()
 local main_window_state = imgui.ImBool(false)
 
-local Checkbox = imgui.ImBool(true)
+local DotCheckbox = imgui.ImBool(false)
+local BracketsCheckbox = imgui.ImBool(true)
 
 function main()
     if not isSampLoaded() or not isSampfuncsLoaded() then return end
@@ -20,8 +21,8 @@ function main()
     
     sampAddChatMessage("{00ffaa}[VrB] {ffffff}Скрипт успешно загружен! Используйте /zxc для открытия меню взаимодействия", 0xFFFFFF)
 
-    sampRegisterChatCommand("vrb", vrb) -- Если есть желание использовать VrB на постоянной основе "vrb" замените на "vr"
-    sampRegisterChatCommand("zxc", zxc)
+    sampRegisterChatCommand("vr", vrb)
+    sampRegisterChatCommand("vrb", zxc)
     imgui.Process = true
     while true do 
 		wait(0)
@@ -38,9 +39,16 @@ end
 
 function vrb(arg)
     if arg ~= "" then
-        if not Checkbox.v then
+        if not BracketsCheckbox.v and not DotCheckbox.v then 
+            sampSendChat("/vr "..arg)
+
+        elseif BracketsCheckbox.v and not DotCheckbox.v then
             sampSendChat("/vr (( "..arg.." ))")
-        elseif  Checkbox.v then 
+
+        elseif not BracketsCheckbox.v and DotCheckbox.v then
+            sampSendChat("/vr "..arg..".")
+        
+        elseif BracketsCheckbox.v and DotCheckbox.v then
             sampSendChat("/vr (( "..arg..". ))")
         end
     end
@@ -52,7 +60,8 @@ function imgui.OnDrawFrame()
         imgui.SetNextWindowPos(imgui.ImVec2(sw / 2, sh / 2.15), imgui.Cond.FirstUseEver, imgui.ImVec2(0.5, 0.5))
         imgui.SetNextWindowSize(imgui.ImVec2(325, 110), imgui.Cond.FirstUseEver)
         imgui.Begin("\tVrB", main_window_state, imgui.WindowFlags.NoResize + imgui.WindowFlags.NoCollapse)
-            imgui.Checkbox(u8'Точка в конце предложения (VrB)', Checkbox)
+            imgui.Checkbox(u8'Точка в конце предложения', DotCheckbox)
+            imgui.Checkbox(u8'Обособление текста скобками', BracketsCheckbox)
         imgui.End()
     end
 end
