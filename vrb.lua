@@ -18,19 +18,20 @@ local VRS = imgui.ImBool(false)
 local VRC = imgui.ImBool(false)
 
 local selected_item = imgui.ImInt(0)
-local police = {u8'Кадет', u8'Офицер', u8'Сержант', u8'Детектив', u8'Лейтенант', u8'Капитан', u8'Командор', u8'Инспектор', u8'Зам.Шефа', u8'Шеф', u8'Шериф', u8'Куратор SWAT', u8'Зам.Куратора SWAT', u8'Капитан SWAT', u8'Командир SWAT', u8'Оперативник SWAT', u8'Лейтенант SWAT', u8'Сержант SWAT', u8'Курсант III', u8'Курсант II', u8'Курсант I', u8'Директор ФБР', u8'Зам. Директора ФБР', u8'Следственный Агент', u8'Специальный Агент', u8'Старший Агент', u8'Агент', u8'Мл.Агент', u8'Курсант III', u8'Курсант II', u8'Курсант I'}
+local police = {u8'Кадет', u8'Офицер', u8'Сержант', u8'Детектив', u8'Лейтенант', u8'Капитан', u8'Командор', u8'Инспектор', u8'Зам.Шефа', u8'Шеф', u8'Шериф', u8'Куратор SWAT', u8'Зам.Куратора SWAT', u8'Капитан SWAT', u8'Командир SWAT', u8'Оперативник SWAT', u8'Лейтенант SWAT', u8'Сержант SWAT', u8'Курсант III', u8'Курсант II', u8'Курсант I', u8'Директор ФБР', u8'Зам. Директора ФБР', u8'Следственный Агент', u8'Специальный Агент', u8'Старший Агент', u8'Агент', u8'Мл.Агент'}
 
 function main()
     if not isSampLoaded() or not isSampfuncsLoaded() then return end
     while not isSampAvailable() do wait(0) end
     
-    sampAddChatMessage("{00ffaa}[VrB] {ffffff}Скрипт успешно загружен! Используйте /zxc для открытия меню взаимодействия", 0xFFFFFF)
+    sampAddChatMessage("{00ffaa}[VrB] {ffffff}Скрипт успешно загружен! Используйте /vrb для открытия меню взаимодействия", 0xFFFFFF)
 
     sampRegisterChatCommand("vr", vrb)
     sampRegisterChatCommand("vrb", zxc)
     sampRegisterChatCommand("vrs", vrs)
     sampRegisterChatCommand("vrc", vrc)
     sampRegisterChatCommand("vrm", vrm)
+    sampRegisterChatCommand("vrbinfo", info)
     imgui.Process = true
     while true do 
 		wait(0)
@@ -38,6 +39,13 @@ function main()
             imgui.Process = false
         end
     end
+end
+
+function info(args) 
+    sampAddChatMessage("{c2c2c2}/vrb{ffffff} - Открыть меню настроек.", -1)
+    sampAddChatMessage("{c2c2c2}/vrc [args]{ffffff} - Говорить шепотом.", -1)
+    sampAddChatMessage("{c2c2c2}/vrs [args]{ffffff} - Кричать.", -1)
+    sampAddChatMessage("{c2c2c2}/vrm [args]{ffffff} - Говорить в мегафон.", -1)
 end
 
 function vrm(args)
