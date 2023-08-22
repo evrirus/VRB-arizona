@@ -14,6 +14,11 @@ local main_window_state = imgui.ImBool(false)
 
 local DotCheckbox = imgui.ImBool(false)
 local BracketsCheckbox = imgui.ImBool(true)
+local VRS = imgui.ImBool(false)
+local VRC = imgui.ImBool(false)
+
+local selected_item = imgui.ImInt(0)
+local police = {u8'Кадет', u8'Офицер', u8'Сержант', u8'Детектив', u8'Лейтенант', u8'Капитан', u8'Командор', u8'Инспектор', u8'Зам.Шефа', u8'Шеф', u8'Шериф', u8'Куратор SWAT', u8'Зам.Куратора SWAT', u8'Капитан SWAT', u8'Командир SWAT', u8'Оперативник SWAT', u8'Лейтенант SWAT', u8'Сержант SWAT', u8'Курсант III', u8'Курсант II', u8'Курсант I', u8'Директор ФБР', u8'Зам. Директора ФБР', u8'Следственный Агент', u8'Специальный Агент', u8'Старший Агент', u8'Агент', u8'Мл.Агент', u8'Курсант III', u8'Курсант II', u8'Курсант I'}
 
 function main()
     if not isSampLoaded() or not isSampfuncsLoaded() then return end
@@ -23,6 +28,9 @@ function main()
 
     sampRegisterChatCommand("vr", vrb)
     sampRegisterChatCommand("vrb", zxc)
+    sampRegisterChatCommand("vrs", vrs)
+    sampRegisterChatCommand("vrc", vrc)
+    sampRegisterChatCommand("vrm", vrm)
     imgui.Process = true
     while true do 
 		wait(0)
@@ -30,6 +38,27 @@ function main()
             imgui.Process = false
         end
     end
+end
+
+function vrm(args)
+    if DotCheckbox.v then
+        args = args.."."
+    end
+    sampSendChat("/vr [M] ["..u8:decode(police[selected_item.v+1]).."]: "..args)
+end
+
+function vrs(args)
+    if DotCheckbox.v then
+        args = args.."."
+    end
+    sampSendChat("/vr кричит: "..args)
+end
+
+function vrc(args)
+    if DotCheckbox.v then
+        args = args.."."
+    end
+    sampSendChat("/vr говорит шепотом: "..args)
 end
 
 function zxc(args)
@@ -62,6 +91,8 @@ function imgui.OnDrawFrame()
         imgui.Begin("\tVrB", main_window_state, imgui.WindowFlags.NoResize + imgui.WindowFlags.NoCollapse)
             imgui.Checkbox(u8'Точка в конце предложения', DotCheckbox)
             imgui.Checkbox(u8'Обособление текста скобками', BracketsCheckbox)
+
+            imgui.Combo(u8'Rank with VRM', selected_item, police, 4)
         imgui.End()
     end
 end
