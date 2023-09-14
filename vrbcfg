@@ -1,0 +1,4 @@
+[config]
+dot = false
+brackets = true
+rank = 1
