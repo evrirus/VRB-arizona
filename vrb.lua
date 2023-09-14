@@ -3,22 +3,27 @@ script_version("0.1")
 --------------------------------------------------------------------------------------------------------------
 require "lib.moonloader"
 
-
+local inicfg = require 'inicfg'
 local imgui = require 'imgui'
 local encoding = require 'encoding'
+
 encoding.default = 'CP1251'
 u8 = encoding.UTF8
+
+local directIni = "moonloader\\config\\vrbcfg.ini"
+new_ini = {
+    config = {
+        dot = false,
+        brackets = true,
+        rank = 1
+    }
+}
 
 local sw, sh = getScreenResolution()
 local main_window_state = imgui.ImBool(false)
 
-local DotCheckbox = imgui.ImBool(false)
-local BracketsCheckbox = imgui.ImBool(true)
 local VRS = imgui.ImBool(false)
 local VRC = imgui.ImBool(false)
-
-local selected_item = imgui.ImInt(0)
-local police = {u8'Кадет', u8'Офицер', u8'Сержант', u8'Детектив', u8'Лейтенант', u8'Капитан', u8'Командор', u8'Инспектор', u8'Зам.Шефа', u8'Шеф', u8'Шериф', u8'Куратор SWAT', u8'Зам.Куратора SWAT', u8'Капитан SWAT', u8'Командир SWAT', u8'Оперативник SWAT', u8'Лейтенант SWAT', u8'Сержант SWAT', u8'Курсант III', u8'Курсант II', u8'Курсант I', u8'Директор ФБР', u8'Зам. Директора ФБР', u8'Следственный Агент', u8'Специальный Агент', u8'Старший Агент', u8'Агент', u8'Мл.Агент'}
 
 function main()
     if not isSampLoaded() or not isSampfuncsLoaded() then return end
@@ -32,7 +37,20 @@ function main()
     sampRegisterChatCommand("vrc", vrc)
     sampRegisterChatCommand("vrm", vrm)
     sampRegisterChatCommand("vrbinfo", info)
+
     imgui.Process = true
+    if not doesFileExist("moonloader/config/vrbcfg.ini") then 
+        inicfg.save(new_ini, "vrbcfg.ini")
+    end
+    
+    mainIni = inicfg.load(nil, directIni)
+
+    DotCheckbox = imgui.ImBool(mainIni.config.dot)
+    BracketsCheckbox = imgui.ImBool(mainIni.config.brackets)
+    selected_item = imgui.ImInt(mainIni.config.rank-1)
+
+    police = {u8'Кадет', u8'Офицер', u8'Сержант', u8'Детектив', u8'Лейтенант', u8'Капитан', u8'Командор', u8'Инспектор', u8'Зам.Шефа', u8'Шеф', u8'Шериф', u8'Куратор SWAT', u8'Зам.Куратора SWAT', u8'Капитан SWAT', u8'Командир SWAT', u8'Оперативник SWAT', u8'Лейтенант SWAT', u8'Сержант SWAT', u8'Курсант III', u8'Курсант II', u8'Курсант I', u8'Директор ФБР', u8'Зам. Директора ФБР', u8'Следственный Агент', u8'Специальный Агент', u8'Старший Агент', u8'Агент', u8'Мл.Агент'}
+
     while true do 
 		wait(0)
         if main_window_state.v == false then
@@ -40,6 +58,7 @@ function main()
         end
     end
 end
+
 
 function info(args) 
     sampAddChatMessage("{c2c2c2}/vrb{ffffff} - Открыть меню настроек.", -1)
@@ -49,21 +68,24 @@ function info(args)
 end
 
 function vrm(args)
-    if DotCheckbox.v then
+    mainIni = inicfg.load(nil, directIni)
+    if mainIni.config.dot then
         args = args.."."
     end
-    sampSendChat("/vr [M] ["..u8:decode(police[selected_item.v+1]).."]: "..args)
+    sampSendChat("/vr [M] ["..u8:decode(police[mainIni.config.rank]).."]: "..args)
 end
 
 function vrs(args)
-    if DotCheckbox.v then
+    mainIni = inicfg.load(nil, directIni)
+    if mainIni.config.dot then
         args = args.."."
     end
     sampSendChat("/vr кричит: "..args)
 end
 
 function vrc(args)
-    if DotCheckbox.v then
+    mainIni = inicfg.load(nil, directIni)
+    if mainIni.config.dot then
         args = args.."."
     end
     sampSendChat("/vr говорит шепотом: "..args)
@@ -75,17 +97,18 @@ function zxc(args)
 end
 
 function vrb(arg)
+    mainIni = inicfg.load(nil, directIni)
     if arg ~= "" then
-        if not BracketsCheckbox.v and not DotCheckbox.v then 
+        if not mainIni.config.brackets and not mainIni.config.dot then 
             sampSendChat("/vr "..arg)
 
-        elseif BracketsCheckbox.v and not DotCheckbox.v then
+        elseif mainIni.config.brackets and not mainIni.config.dot then
             sampSendChat("/vr (( "..arg.." ))")
 
-        elseif not BracketsCheckbox.v and DotCheckbox.v then
+        elseif not mainIni.config.brackets and mainIni.config.dot then
             sampSendChat("/vr "..arg..".")
         
-        elseif BracketsCheckbox.v and DotCheckbox.v then
+        elseif mainIni.config.brackets and mainIni.config.dot then
             sampSendChat("/vr (( "..arg..". ))")
         end
     end
@@ -99,9 +122,13 @@ function imgui.OnDrawFrame()
         imgui.Begin("\tVrB", main_window_state, imgui.WindowFlags.NoResize + imgui.WindowFlags.NoCollapse)
             imgui.Checkbox(u8'Точка в конце предложения', DotCheckbox)
             imgui.Checkbox(u8'Обособление текста скобками', BracketsCheckbox)
-
             imgui.Combo(u8'Rank with VRM', selected_item, police, 4)
         imgui.End()
+        mainIni.config.dot = DotCheckbox.v
+        mainIni.config.brackets = BracketsCheckbox.v
+        mainIni.config.rank = selected_item.v+1
+        inicfg.save(mainIni, directIni)
+
     end
 end
 
